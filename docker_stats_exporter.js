@@ -141,12 +141,14 @@ async function gatherMetrics() {
 
         // Build metrics for each container
         for (let result of results) {
+          try {
             const labels = {
                 'name': result['name'].replace('/', ''),
                 'id': result['id'].slice(0, 12),
             };
 
             // CPU
+          try {
             if (result['cpu_stats'] && result['cpu_stats']['cpu_usage'] && result['precpu_stats'] && result['precpu_stats']['cpu_usage']) {
                 let cpuDelta = result['cpu_stats']['cpu_usage']['total_usage'] - result['precpu_stats']['cpu_usage']['total_usage'];
                 let systemDelta = result['cpu_stats']['system_cpu_usage'] - result['precpu_stats']['system_cpu_usage'];
@@ -156,8 +158,12 @@ async function gatherMetrics() {
                 let cpuPercent = parseFloat(((cpuDelta / systemDelta) * result['cpu_stats']['online_cpus'] * 100).toFixed(2));
                 gaugeCpuUsageRatio.set(labels, cpuPercent);
             }
+          } catch (err) {
+            console.log("ERROR (name="+result['name']+"/CPU): " + err);
+          }
 
             // Memory
+          try {
             if (result['memory_stats']) {
                 let memUsage = result['memory_stats']['usage'];
                 let memLimit = result['memory_stats']['limit'];
@@ -169,8 +175,12 @@ async function gatherMetrics() {
                 gaugeMemoryLimitBytes.set(labels, memLimit);
                 gaugeMemoryUsageRatio.set(labels, memPercent);
             }
+          } catch (err) {
+            console.log("ERROR (name="+result['name']+"/Memory): " + err);
+          }
 
             // Network
+          try {
             if (result['networks']) {
                 if (result['networks']['eth0']) {
                     let netRx = result['networks']['eth0']['rx_bytes'];
@@ -184,8 +194,12 @@ async function gatherMetrics() {
                     gaugeNetworkTransmittedBytes.set(labels, netTx);
                 }
             }
+          } catch (err) {
+            console.log("ERROR (name="+result['name']+"/Network): " + err);
+          }
 
             // Block IO
+         try {
             if (result['blkio_stats']) {
                 let ioRead = 0.00;
                 let ioWrite = 0.00;
@@ -204,9 +218,20 @@ async function gatherMetrics() {
                 gaugeBlockIoReadBytes.set(labels, ioRead);
                 gaugeBlockIoWrittenBytes.set(labels, ioWrite);
             }
+          } catch (err) {
+            console.log("ERROR (name="+result['name']+"/BlockIO): " + err);
+          }
+
+        } catch (err) {
+          console.log("ERROR (name="+result['name']+"): " + err);
         }
+
+      // end for 
+      }
+
     } catch (err) {
         console.log('ERROR: ' + err);
     }
+
 }
 
