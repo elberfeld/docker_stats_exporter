@@ -159,7 +159,7 @@ async function gatherMetrics() {
                 gaugeCpuUsageRatio.set(labels, cpuPercent);
             }
           } catch (err) {
-            console.log("ERROR (name="+result['name']+"/CPU): " + err);
+            console.log("WARN:  (name="+result['name']+"/CPU): " + err);
           }
 
             // Memory
@@ -176,7 +176,7 @@ async function gatherMetrics() {
                 gaugeMemoryUsageRatio.set(labels, memPercent);
             }
           } catch (err) {
-            console.log("ERROR (name="+result['name']+"/Memory): " + err);
+            console.log("WARN:  (name="+result['name']+"/Memory): " + err);
           }
 
             // Network
@@ -195,7 +195,7 @@ async function gatherMetrics() {
                 }
             }
           } catch (err) {
-            console.log("ERROR (name="+result['name']+"/Network): " + err);
+            console.log("WARN:  (name="+result['name']+"/Network): " + err);
           }
 
             // Block IO
@@ -219,11 +219,11 @@ async function gatherMetrics() {
                 gaugeBlockIoWrittenBytes.set(labels, ioWrite);
             }
           } catch (err) {
-            console.log("ERROR (name="+result['name']+"/BlockIO): " + err);
+            console.log("WARN:  (name="+result['name']+"/BlockIO): " + err);
           }
 
         } catch (err) {
-          console.log("ERROR (name="+result['name']+"): " + err);
+          console.log("WARN: (name="+result['name']+"): " + err);
         }
 
       // end for 
